@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 
 import argparse
+import estimate
 import importlib
 import MySQLdb
 import os
 import parse_config
-import sql
 import sys
-import time
 import traceback
+
+from mossy import sql
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Perform semantic similarity",
+    parser = argparse.ArgumentParser(description="Perform semantic similarity "
+                                     "based on an OWLtoSQL database.",
                                      add_help=False)
     
     # Help arguments
@@ -133,18 +135,18 @@ def main():
         parser.error(e)
     
     # Import all python files under this directory, recursively
-    plugins = os.path.join(os.path.dirname(__file__) or '.', "plugins")
-    for filename in os.listdir(plugins):
-        if filename.endswith('.py'):
-            importlib.import_module("plugins." + filename[:-3])
+    for dirpath, dirnames, filenames in os.walk():
+        module_name = "plugins." + dirpath.replace("/", ".")
+        for filename in filenames:
+            if filename.endswith('.py'):
+                importlib.import_module(module_name + filename[:-3])
     
     # Read the configuration file and the extra execution lines provided with
     # the -e flag
     config = parse_config.parse_config(args.config, args.execute)
     
     if args.eta:
-        start = time.time()
-        count = 0
+        eta = estimate.ETA(config.total, sys.stderr)
     
     # Run the comparer with the provided items
     for group in config.groups:
@@ -156,7 +158,7 @@ def main():
         
         try:
             similarity = config.comparer.compare(*group)
-        except MySQLdb.MySQLError as e:
+        except sql._driver.MySQLError as e:
             raise e
         except Exception as e:
             print("Unable to compare {}".format(", ".join(sb)), file=args.log)
@@ -167,48 +169,11 @@ def main():
         print('\t'.join(sb), file=args.output)
         
         if args.eta:
-            count += 1
-            now = time.time()
-            
-            todo = config.total - count
-            elapsed = now - start
-            eta = todo * elapsed / count
-            percentage = int(100 * count / config.total)
-            
-            if eta < 3600: # If we are waiting less tha one hour
-                if eta < 60:
-                    msg = "{:02}s".format(int(eta))
-                else:
-                    m, s = divmod(eta, 60)
-                    msg = "{:02}m {:02}s".format(int(m), int(s))
-            else:
-                eta = time.strftime("%Y-%b-%d %H:%M:%S",
-                                    time.localtime(now + eta))
-                msg = "ETA: {}".format(eta)
-            
-            # Format a line to print the ETA, ensuring that the previous line
-            # gets erased
-            print("\r\033[K[{:3}%] {}".format(percentage, msg),
-                  file=sys.stderr, end="")
-            sys.stderr.flush()
+            eta.increment()
+            eta.estimate()
     
     if args.eta:
-        elapsed = time.time() - start
-        hours, rest = divmod(elapsed, 3600)
-        minutes, seconds = divmod(rest, 60)
-        
-        hours = int(hours)
-        minutes = int(minutes)
-        seconds = int(seconds)
-        
-        if hours:
-            elapsed = "{:02}h {:02}m {:02}s".format(hours, minutes, seconds)
-        elif minutes:
-            elapsed = "{:02}m {:02}s".format(minutes, seconds)
-        else:
-            elapsed = "{:02}s".format(seconds)
-        print("\r\033[K[{:3}%] Elapsed: {}".format(percentage, elapsed),
-              file=sys.stderr)
+        eta.finish()
 
 
 if __name__ == '__main__':

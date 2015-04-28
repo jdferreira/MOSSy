@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
-import sql
+from mossy import sql
 
 
-def get_id(iri, entity_type="Class", _cache={}):
-    if (iri, entity_type) in _cache:
-        return _cache[iri, entity_type]
+ENTITY_CACHE = {}
+ID_CACHE = {}
+
+def get_id(iri, entity_type="Class"):
+    if (iri, entity_type) in ENTITY_CACHE:
+        return ENTITY_CACHE[iri, entity_type]
     
     with sql.lock:
         sql.cursor.execute(
@@ -20,8 +23,30 @@ def get_id(iri, entity_type="Class", _cache={}):
     else:
         result = row[0]
     
-    _cache[iri, entity_type] = result
+    ENTITY_CACHE[iri, entity_type] = result
+    ID_CACHE[result] = (iri, entity_type)
     return result
+
+
+def get_entity(entity_id):
+    if entity_id in ID_CACHE:
+        return ID_CACHE[entity_id]
+    
+    with sql.lock:
+        sql.cursor.execute(
+            "SELECT iri, type "
+            "FROM owl_objects "
+            "WHERE id = %s "
+            "LIMIT 1", (entity_id,))
+        row = sql.cursor.fetchone()
+    
+    if row is None:
+        return None
+    
+    ID_CACHE[entity_id] = row
+    ENTITY_CACHE[row] = entity_id
+    return row
+    
 
 
 def seq_to_ids(seq, entity_type="Class"):
@@ -53,3 +78,4 @@ def to_seq(obj):
         return obj
     else:
         return [obj]
+

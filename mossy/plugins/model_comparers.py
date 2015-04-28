@@ -1,6 +1,5 @@
-import utils
-
-from parse_config import register
+from mossy import utils
+from mossy.parse_config import register
 
 @register()
 class from_list_comparer:

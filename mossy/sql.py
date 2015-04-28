@@ -1,20 +1,43 @@
-# This module is here only to allow a global cursor object and a lock to ensure
-# thread safety
+# This module is here to allow a global cursor object and a lock to ensure
+# thread safety. It takes care to select the correct MySQL connector, either
+# MySQLdb or PyMySQL, depending on what is installed
 
-import MySQLdb
 import threading
+
+try:
+    import MySQLdb
+    _driver = MySQLdb
+except ImportError:
+    try:
+        import pymysql
+        _driver = pymysql
+    except ImportError:
+        raise ImportError("Unable to import either 'MySQLdb' or 'pymysql'")
+
+
+MySQLError = _driver.MySQLError
+
 
 def set_connection(hostname, database, username, password):
     global conn, cursor, lock
     
-    conn = MySQLdb.connect(host=hostname, db=database,
+    conn = _driver.connect(host=hostname, db=database,
                            user=username, passwd=password)
     cursor = conn.cursor()
     lock = threading.Lock()
 
 
-VALID_START_CHARS = ('abcdefghijklmnopqrstuvwxyz'
-                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ_')
+def close_connection():
+    global conn, cursor, lock
+    cursor.close()
+    conn.close()
+    
+    del conn
+    del cursor
+    del lock
+
+
+VALID_START_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'
 VALID_CHARS = VALID_START_CHARS + '0123456789'
 
 def assert_identifier(identifier):

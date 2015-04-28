@@ -1,0 +1,43 @@
+{
+    "ontologies": [
+        "file:test-ontology.owl"
+    ],
+    
+    "mysql": {
+        "database": "owltosql",
+        "username": "owltosql",
+        "password": "owltosql",
+        "host": "localhost"
+    },
+    
+    "extractors": [
+        {
+            "class": "pt.owlsql.extractors.HierarchyExtractor"
+        },
+        {
+            "class": "pt.owlsql.extractors.ExtendedHierarchyExtractor",
+            "specs": {
+                "superparts": {
+                    "properties": [
+                        "http://www.example.org/mossy/test#hasPart"
+                    ],
+                    "subproperties": true,
+                    "emulate": [ "transitive", "not reflexive" ]
+                }
+            }
+        },
+        {
+            "class": "pt.owlsql.extractors.LeavesExtractor"
+        },
+        {
+            "class": "pt.owlsql.extractors.IntrinsicICExtractor",
+            "zhou_k": 0.5
+        },
+        {
+            "class": "pt.owlsql.extractors.DisjointnessExtractor"
+        },
+        {
+            "class": "pt.owlsql.extractors.relations.ExistentialRelationsExtractor"
+        }
+    ]
+}

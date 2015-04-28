@@ -1,0 +1,619 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.example.org/mossy/test/"
+     xml:base="http://www.example.org/mossy/test/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.example.org/mossy/test">
+        <owl:versionIRI rdf:resource="http://www.example.org/mossy/test/v1.0"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.org/mossy/test#eats -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/mossy/test#eats"/>
+    
+
+
+    <!-- http://www.example.org/mossy/test#hasCapability -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/mossy/test#hasCapability"/>
+    
+
+
+    <!-- http://www.example.org/mossy/test#hasHabitat -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/mossy/test#hasHabitat"/>
+    
+
+
+    <!-- http://www.example.org/mossy/test#hasPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/mossy/test#hasPart">
+        <rdf:type rdf:resource="&owl;ReflexiveProperty"/>
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.org/mossy/test#Animal -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Animal">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Living_being"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Mouth"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.example.org/mossy/test#Plant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Apple_tree -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Apple_tree">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Tree"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Bat -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Bat">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Mammal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Fruit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Flight"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Bird -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Bird">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Wing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Body_part -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Body_part"/>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Capability -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Capability"/>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Carnivorous -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Carnivorous">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:allValuesFrom rdf:resource="http://www.example.org/mossy/test#Animal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Animal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Chicken -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Chicken">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Bird"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Herbivorous"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Cow -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Cow">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Mammal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Walk"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Grass"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Dog -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Dog">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Mammal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Speed"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Swim"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Walk"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Eagle -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Eagle">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Bird"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Carnivorous"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Squirrel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Chicken"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Rabbit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Flight"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Fish -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Fish">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Water_habitat"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Swim"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Flight -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Flight">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Capability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Fruit -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Fruit">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Body_part"/>
+        <owl:disjointWith rdf:resource="http://www.example.org/mossy/test#Plant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Grass -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Grass">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Plant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Habitat -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Habitat"/>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Herbivorous -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Herbivorous">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Plant"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:allValuesFrom rdf:resource="http://www.example.org/mossy/test#Plant"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Land -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Land">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Habitat"/>
+        <owl:disjointWith rdf:resource="http://www.example.org/mossy/test#Water_habitat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Living_being -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Living_being"/>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Mackarel -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Mackarel">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Fish"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Mammal -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Mammal">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Animal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Mouth -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Mouth">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Body_part"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Tongue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Tooth"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Ostrich -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Ostrich">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Bird"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Herbivorous"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Palm_tree -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Palm_tree">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Tree"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Penguin -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Penguin">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Bird"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Carnivorous"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Pine -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Pine">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Tree"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Plant -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Plant">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Living_being"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Rabbit -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Rabbit">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Herbivorous"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Mammal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Salmon -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Salmon">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Fish"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Shark -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Shark">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Carnivorous"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Fish"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#eats"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Fish"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Sparrow -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Sparrow">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Bird"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Flight"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Speed -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Speed">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Capability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Squirrel -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Squirrel">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Herbivorous"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Mammal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Swim -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Swim">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Capability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Tongue -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Tongue">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Body_part"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Tooth -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Tooth">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Body_part"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Tree -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Tree">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Plant"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Land"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Walk -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Walk">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Capability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Water_habitat -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Water_habitat">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Habitat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Whale -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Whale">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Mammal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Water_habitat"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Swim"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Wing -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Wing">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Body_part"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/mossy/test#Wolf -->
+
+    <owl:Class rdf:about="http://www.example.org/mossy/test#Wolf">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/mossy/test#Mammal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Speed"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/mossy/test#hasCapability"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/mossy/test#Walk"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Bird"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Fish"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Mammal"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Fruit"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Mouth"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Tongue"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Tooth"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Wing"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Flight"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Speed"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Swim"/>
+            <rdf:Description rdf:about="http://www.example.org/mossy/test#Walk"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

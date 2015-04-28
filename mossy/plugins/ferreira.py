@@ -1,15 +1,11 @@
-import sql
 import sys
-import utils
 
 from collections import defaultdict
-from parse_config import register
-from plugins.concept_comparers import ICCalculator
 
+from mossy import sql, utils
+from mossy.parse_config import register
+from mossy.plugins.concept_comparers import ICCalculator
 
-for i in range(4):
-    pass
-                                
 
 def chain_to_ids(chain):
     properties = chain[:-1]
@@ -54,7 +50,8 @@ class ferreira:
                  weight_threshold=0.3,
                  property_weights=None,
                  default_weight=0.7,
-                 hierarchy_weight=0.8):
+                 hierarchy_weight=0.8,
+                 discover_subclasses=False):
         
         self.distance_threshold = distance_threshold
         self.weight_threshold = weight_threshold
@@ -79,6 +76,22 @@ class ferreira:
             "SELECT chain, end, distance "
             "FROM existential_relations "
             "WHERE start = %s AND distance <= %s")
+        
+        self.discover_subclasses = discover_subclasses
+        if discover_subclasses:
+            self.get_hierarchy_query = (
+                "SELECT superclass "
+                "FROM hierarchy "
+                "WHERE subclass = %s AND distance = 1 "
+                "UNION "
+                "SELECT subclass "
+                "FROM hierarchy "
+                "WHERE superclass = %s AND distance = 1")
+        else:
+            self.get_hierarchy_query = (
+                "SELECT superclass "
+                "FROM hierarchy "
+                "WHERE subclass = %s AND distance = 1")
     
     
     def compare(self, one, two):
@@ -171,6 +184,24 @@ class ferreira:
                     if (current_distance <= self.distance_threshold
                             and current_weight >= self.weight_threshold):
                         todo.append((end, current_distance, current_weight))
+        
+                if not self.property_weights[None]:
+                    continue
+                
+                if self.discover_subclasses:
+                    args = (concept_id, concept_id)
+                else:
+                    args = (concept_id,)
+                sql.cursor.execute(self.get_hierarchy_query, args)
+                
+                for relative, in sql.cursor:
+                    current_distance = prev_distance + 1
+                    current_weight = prev_weight * self.property_weights[None]
+                    if (current_distance <= self.distance_threshold
+                            and current_weight >= self.weight_threshold):
+                        todo.append((relative,
+                                    current_distance,
+                                    current_weight))
         
         return result
                     

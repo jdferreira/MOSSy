@@ -1,7 +1,6 @@
-import sql
-import utils
 
-from parse_config import register
+from mossy import sql, utils
+from mossy.parse_config import register
 
 
 @register()

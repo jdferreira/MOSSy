@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+# Protégé catalog file
+catalog-v001.xml
+
 # C extensions
 *.so
 
