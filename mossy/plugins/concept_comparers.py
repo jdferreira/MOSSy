@@ -1,4 +1,3 @@
-
 from mossy import sql, utils
 from mossy.parse_config import register
 

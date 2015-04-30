@@ -8,6 +8,73 @@ import mossy.plugins
 from mossy import sql, estimate, parse_config
 
 
+def get_database_params(args):
+    
+    # Initialize the parameters
+    hostname = 'localhost'
+    database = username = password = None
+    
+    if args.sql_config is not None:
+        sql_file = args.sql_config
+    else:
+        try:
+            sql_file = open("sql.config")
+        except:
+            sql_file = None
+    
+    if sql_file is not None:
+        for lineno, line in enumerate(sql_file):
+            lineno += 1 # Cause we want lines to start at 1
+            
+            line = line.rstrip('\n')
+            if line.startswith('#') or not line:
+                continue
+            
+            if '=' not in line:
+                raise ValueError("{}, l.{}: Missing an equal sign '='."
+                                 .format(sql_file.name, lineno))
+            
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip()
+            if key == "hostname":
+                hostname = value
+            elif key == "database":
+                database = value
+            elif key == "username":
+                username = value
+            elif key == "password":
+                password = value
+            else:
+                raise ValueError("{}, l.{}: Unexpected key {}."
+                                 .format(sql_file.name, lineno, key))
+    
+    
+    # Overwrite the file configuration with the values from the command line
+    if args.hostname is not None:
+        hostname = args.hostname
+    if args.database is not None:
+        database = args.database
+    if args.username is not None:
+        username = args.username
+    if args.password is not None:
+        password = args.password
+    
+    # If no hostname is given, use localhost
+    if hostname is None:
+        hostname = 'localhost'
+    
+    # If any of the other parameters is not given, stop execution
+    if database is None:
+        raise Exception("No database provided.")
+    if username is None:
+        raise Exception("No username provided.")
+    if password is None:
+        raise Exception("No password provided.")
+    
+    return hostname, database, username, password
+
+
 def main():
     parser = argparse.ArgumentParser(description="Perform semantic similarity "
                                      "based on an OWLtoSQL database.",
@@ -18,7 +85,7 @@ def main():
                         help="Shows this help.")
     
     # Input arguments
-    parser.add_argument("config", nargs='*', default=sys.stdin,
+    parser.add_argument("config", nargs='*', default=[sys.stdin],
                         type=argparse.FileType('r'), metavar="CONFIG",
                         help="A file containing the configuration parameters "
                              "that specify what to compare and how to compare "
@@ -50,7 +117,7 @@ def main():
     
     # Database arguments
     parser.add_argument("--sql-config", type=argparse.FileType('r'),
-                        default=argparse.FileType('r')('sql.config'),
+                        default=None,
                         help="The file that contains database accession "
                              "parameters. The file must be of key=value type "
                              "(each key in a line), with the keys 'hostname' "
@@ -72,63 +139,17 @@ def main():
     # Parse the arguments
     args = parser.parse_args()
     
-    # Get the SQL parameters
-    hostname = database = username = password = None
-    if args.sql_config is not None:
-        for lineno, line in enumerate(args.sql_config):
-            line = line.rstrip('\n')
-            if '=' not in line:
-                raise ValueError("{}, l.{}: Missing an equal sign '='."
-                                 .format(args.sql_config.name, lineno))
-            
-            key, value = line.split('=', 1)
-            key = key.strip()
-            value = value.strip()
-            if key == "hostname":
-                hostname = value
-            elif key == "database":
-                database = value
-            elif key == "username":
-                username = value
-            elif key == "password":
-                password = value
-            else:
-                raise ValueError("{}, l.{}: Unexpected key {}."
-                                 .format(args.sql_config.name,
-                                         lineno, key))
-    
-    # Overwrite the file configuration with the values from the command line
-    if args.hostname is not None:
-        hostname = args.hostname
-    if args.database is not None:
-        database = args.database
-    if args.username is not None:
-        username = args.username
-    if args.password is not None:
-        password = args.password
-    
-    # If no hostname is given, use localhost
-    if hostname is None:
-        hostname = 'localhost'
-    
-    # If any of the other parameters is not given, stop execution
-    if args.sql_config is None:
-        msg = "Missing database parameter: '{}'."
-    else:
-        msg = "No {} provided. Use the {} flag or add it to '{}'."
-    
-    if database is None:
-        parser.error(msg.format("database", "-d", args.sql_config.name))
-    elif username is None:
-        parser.error(msg.format("username", "-u", args.sql_config.name))
-    if password is None:
-        parser.error(msg.format("password", "-p", args.sql_config.name))
+    # Get the database parameters
+    try:
+        db_params = get_database_params(args)
+    except Exception as e:
+        parser.error(e)
     
     # Start a connection to the database
     try:
-        sql.set_connection(hostname, database, username, password)
-    except Exception as e:
-        parser.error(e)
+        sql.set_connection(*db_params)
+    except sql.MySQLError as e:
+        parser.error(e.args[1])
     
     # Read the configuration file and the extra execution lines provided with
     # the -e flag
