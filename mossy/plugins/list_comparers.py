@@ -1,4 +1,4 @@
-from parse_config import register
+from mossy.parse_config import register
 
 @register()
 class simple_list_comparer:

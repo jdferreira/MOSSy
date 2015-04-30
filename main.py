@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 
 import argparse
-import estimate
-import importlib
-import MySQLdb
-import os
-import parse_config
 import sys
 import traceback
 
-from mossy import sql
+import mossy.plugins
+from mossy import sql, estimate, parse_config
 
 
 def main():
@@ -134,19 +130,13 @@ def main():
     except Exception as e:
         parser.error(e)
     
-    # Import all python files under this directory, recursively
-    for dirpath, dirnames, filenames in os.walk():
-        module_name = "plugins." + dirpath.replace("/", ".")
-        for filename in filenames:
-            if filename.endswith('.py'):
-                importlib.import_module(module_name + filename[:-3])
-    
     # Read the configuration file and the extra execution lines provided with
     # the -e flag
     config = parse_config.parse_config(args.config, args.execute)
     
     if args.eta:
         eta = estimate.ETA(config.total, sys.stderr)
+        eta.start()
     
     # Run the comparer with the provided items
     for group in config.groups:
