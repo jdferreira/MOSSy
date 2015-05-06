@@ -4,7 +4,7 @@ import sys
 
 class ETA:
     
-    def __init__(self, total, stream):
+    def __init__(self, total, stream=sys.stderr):
         self.total = total
         self.stream = stream
     

@@ -339,11 +339,11 @@ def parse_config(files, commands):
     
     for file in files:
         text = file.read()
-        root = ast.parse(text)
+        root = ast.parse(text, filename=file.name)
         execute_code(root, file.name, inner_globals)
     
     for text in commands:
-        root = ast.parse(text)
+        root = ast.parse(text, "<execute>")
         execute_code(root, '--execute', inner_globals)
     
     # Make sure we have the necessary variables in the inner_globals dictionary
