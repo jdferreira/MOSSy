@@ -1,4 +1,5 @@
 import sys
+import math
 
 from collections import defaultdict
 
@@ -41,6 +42,33 @@ def convert_input(item):
     return chains
 
 
+@register("log_scale")
+class LogScale:
+    
+    def __init__(self, scale_min=0, scale_max=1):
+        self.min = scale_min
+        self.max = scale_max
+    
+    
+    def get_weights(self):
+        result = {}
+        
+        with sql.lock:
+            sql.cursor.execute("SELECT COUNT(*) FROM existential_relations")
+            log_total = math.log(sql.cursor.fetchone()[0])
+            
+            sql.cursor.execute(
+                "SELECT chain, COUNT(*) "
+                "FROM existential_relations "
+                "WHERE distance = 1 "
+                "GROUP BY chain")
+            for prop_id, count in sql.cursor:
+                weight = 1 - math.log(count) / log_total
+                result[int(prop_id)] = self.min + (self.max - self.min) * weight
+        
+        return result
+
+
 @register()
 class ferreira:
     
@@ -55,9 +83,16 @@ class ferreira:
         
         self.distance_threshold = distance_threshold
         self.weight_threshold = weight_threshold
-        self.default_weight = default_weight
         
-        self.property_weights = {}
+        if isinstance(default_weight, LogScale):
+            # We assign to each property a weight based on the amount of times
+            # that property is used in the database
+            self.property_weights = default_weight.get_weights()
+            self.default_weight = 0
+        else:
+            self.property_weights = {}
+            self.default_weight = default_weight
+        
         if property_weights is not None:
             for prop, weight in property_weights.items():
                 prop = utils.get_id(prop, "ObjectProperty")
