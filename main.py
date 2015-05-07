@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import sys
 import traceback
 
@@ -72,6 +73,11 @@ def get_database_params(args):
     if password is None:
         raise Exception("No password provided.")
     
+    logging.info("HOSTNAME = %s", hostname)
+    logging.info("DATABASE = %s", database)
+    logging.info("USERNAME = %s", username)
+    logging.info("PASSWORD = %s", password)
+    
     return hostname, database, username, password
 
 
@@ -102,13 +108,18 @@ def main():
                         help="The file to output the results of this semantic "
                              "similarity request. If not provided, results are "
                              "printed into standard output.")
-    parser.add_argument("-l", "--log", nargs='?', type=argparse.FileType('w'),
-                        default=sys.stderr, const=sys.stderr,
+    parser.add_argument("-l", "--log", nargs='?', const=sys.stderr,
+                        type=argparse.FileType('w'),
                         help="If provided, logging information is printed to "
                              "the selected file. If the flag is provided but "
                              "no file is given, logging information is printed "
                              "into standard error")
-    # TODO: Add logging capabilities!
+    parser.add_argument("-g", "--debug", action="store_const", dest="log_level",
+                        default=logging.WARNING, const=logging.DEBUG,
+                        help="If provided, the logging facility will output "
+                             "any information with log level DEBUG or higher; "
+                             "otherwise, only warnings or higher are logged.")
+    
     
     # Show time to finish
     parser.add_argument("-t", "--eta", action="store_true",
@@ -138,6 +149,18 @@ def main():
     
     # Parse the arguments
     args = parser.parse_args()
+    
+    # Setup logging the facility
+    if args.log is None:
+        logging.basicConfig(handlers=[logging.NullHandler()])
+    else:
+        logging_format = "%(asctime)s {%(levelname)-7s} %(message)s"
+        data_format = "%Y-%m-%d [%H:%M:%S]"
+        logging.basicConfig(
+            format=logging_format,
+            datefmt=data_format,
+            level=args.log_level,
+            stream=args.log)
     
     # Get the database parameters
     try:
