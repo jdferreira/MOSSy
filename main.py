@@ -188,7 +188,8 @@ def main():
         for item in group:
             sb.append("{}".format(item))
         
-        group = (config.items[i] for i in group)
+        logging.debug("Comparing %s", ', '.join(sb))
+        group = [config.items[i] for i in group]
         
         try:
             similarity = config.comparer.compare(*group)
