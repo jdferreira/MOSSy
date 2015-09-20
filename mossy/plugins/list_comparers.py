@@ -1,6 +1,6 @@
-from mossy.parse_config import register
+from mossy.parse_config import plugin
 
-@register()
+@plugin()
 class simple_list_comparer:
     
     def __init__(self, inner, aggr):
@@ -32,21 +32,21 @@ class simple_list_comparer:
 PLUS_INF = float('inf')
 MINUS_INF = -PLUS_INF
 
-@register()
+@plugin()
 class list_min:
     
     def aggregate(self, matrix, one, two):
         return min(value for row in matrix for value in row)
 
 
-@register()
+@plugin()
 class list_max:
     
     def aggregate(self, matrix, one, two):
         return max(value for row in matrix for value in row)
 
 
-@register()
+@plugin()
 class list_avg:
     
     def aggregate(self, matrix, one, two):
@@ -55,7 +55,7 @@ class list_avg:
         return total / count
 
 
-@register()
+@plugin()
 class list_bma:
     
     def aggregate(self, matrix, one, two):
@@ -68,7 +68,7 @@ class list_bma:
         return (sum(max_rows) + sum(max_cols)) / (len(max_rows) + len(max_cols))
 
 
-@register()
+@plugin()
 class list_hna:
     
     def __init__(self, n=10, mode="highest"):

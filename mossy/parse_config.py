@@ -49,15 +49,28 @@ def config_macro(inner):
 
 
 SAFE_FUNCTIONS = {}
-def register(name=None):
+def plugin(name=None):
     """
-    This function returns another function.
-    The returned function accepts as its only argument a user developed
-    function and registers it with the given name. If no name is given, it
-    uses the actual name of the function.
+    This function registers a plugin that can be called from the configuration
+    files. The function itself is not a decorator, but returns a decorator. As
+    such, it must be called. It does not support positional arguments but only
+    keyword arguments. In general, no arguments at all are needed.
     
-    Registered functions like this are "safe", is the sense that they can be
-    used inside the configuration file
+    The only accepted keyword argument at this time is `name', which defines
+    the name with which the plugin is used in the configuration files
+    
+    Two examples:
+    
+        @plugin()
+        def safe_function_1(*args):
+            pass
+        
+        @plugin(name="safe")
+        def name_does_not_matter(*args):
+            pass
+    
+    At this point, the configuration files can refer to the functions
+    `safe_function_1` and `safe`.
     """
     
     def decorator(inner):
@@ -87,11 +100,12 @@ def evaluate(node, filename, the_globals):
 
 
 def execute_code(root, filename, inner_globals):
-    # root must be a list of assignments only.
-    # The value of each assignment must be a safe expression
+    # `root` must be a list containing only assignments and safe calls.
+    # The value of each assignment must be a safe expression.
     
     for stmt in root.body:
         if type(stmt) == ast.Expr and type(stmt.value) == ast.Call:
+            # This is a call; make sure it is safe to execute
             call_node = stmt.value
             if type(call_node.func) != ast.Name:
                 raise ParseException("l.{}: Cannot call an anonymous function."
@@ -153,8 +167,8 @@ def execute_code(root, filename, inner_globals):
                                  .format(target.lineno, target.id))
     
         if target.id in SAFE_FUNCTIONS:
-            raise ParseException("l.{}: '{}' is a safe function"
-                                 .format(target.lineno, target.id))
+            raise ParseException("l.{}: '{}' is already defined as a safe "
+                                 "function".format(target.lineno, target.id))
         
         # We must make sure that the expression is safe and will never run
         # user provided code that leads to insecurities in the program
@@ -164,7 +178,6 @@ def execute_code(root, filename, inner_globals):
         # strings that use that namespace
         if target.id != "namespaces" and "namespaces" in inner_globals:
             NamespaceUnroller(inner_globals["namespaces"]).visit(stmt.value)
-        
         
         if target.id == "groups":
             # The groups assignment must be processed a little differently,
@@ -184,10 +197,14 @@ def execute_code(root, filename, inner_globals):
                 assert_valid_namespaces(stmt.value)
             
             # We execute the statement as is
-            code = ast.Module(body=[stmt])
-            code.lineno = code.col_offset = 0
-            code = compile(code, filename, 'exec')
-            exec(code, inner_globals)
+            value = evaluate(stmt.value, filename, inner_globals)
+            inner_globals[target.id] = value
+            
+            # Was:
+            #   code = ast.Module(body=[stmt])
+            #   code.lineno = code.col_offset = 0
+            #   code = compile(code, filename, 'exec')
+            #   exec(code, inner_globals)
         
         else:
             # This is a regular user-defined item. As such, we execute the
@@ -199,14 +216,16 @@ def execute_code(root, filename, inner_globals):
     
 
 def exec_group(node, filename, inner_globals):
-    # 'groups' must necessarily be a sequence of sequences. Any sequence
-    # type is valid (tuples, lists and sets)
-    # During evaluation of each group, we use the named_items instead of the
+    # 'groups' must necessarily be a list of sequences. Any sequence type is
+    # valid for each individual group (tuples, lists and sets). During
+    # evaluation of each group, we use the named_items instead of the
     # inner_globals.
     
     if type(node) != ast.List:
         raise ParseException("l.{}: Expecting a list of groups."
                              .format(node.lineno))
+    
+    named_items = inner_globals["named_items"]
     
     # As we traverse the groups, we convert them into actual groups
     groups = []
@@ -216,11 +235,11 @@ def exec_group(node, filename, inner_globals):
                                  .format(group_node.lineno))
         group = []
         for item_node in group_node.elts:
-            value = evaluate(item_node, filename, inner_globals["named_items"])
+            value = evaluate(item_node, filename, named_items)
             
             if type(item_node) != ast.Name:
                 name = str(value)
-                inner_globals["named_items"][name] = value
+                named_items[name] = value
             else:
                 name = item_node.id
             
@@ -232,7 +251,7 @@ def exec_group(node, filename, inner_globals):
             group = set(group)
         
         groups.append(group)
-
+    
     inner_globals["groups"] = groups
 
 
@@ -253,7 +272,7 @@ def add_random_pairs(n, *, inner_globals):
     names = list(i for i in inner_globals["named_items"] if i[0] != '_')
     groups = ((random.choice(names), random.choice(names)) for _ in range(n))
     inner_globals["groups"] = groups
-    inner_globals["total"] = n
+    inner_globals["total"] = inner_globals.get("total", 0) + n
 
 
 def assert_safe_expr(node):
@@ -265,8 +284,8 @@ def assert_safe_expr(node):
     #      expressions);
     #   4. a call to a safe function *by name* with arguments that are safe
     #      expressions; being called by name ensures that we can check whether
-    #      the function is safe (a safe callable is defined with the @safe
-    #      decorator).
+    #      the function is safe (a safe callable is defined with the
+    #      @plugin decorator).
     
     t = type(node)
     
@@ -289,11 +308,11 @@ def assert_safe_expr(node):
     elif t == ast.Call:
         func_node = node.func
         if type(func_node) != ast.Name:
-            raise ParseException("l.{}: Functions can only be called by name"
+            raise ParseException("l.{}: Cannot call an anonymous function"
                                  .format(func_node.lineno))
         
         if func_node.id not in SAFE_FUNCTIONS:
-            raise ParseException("l.{}: Function {} is not safe."
+            raise ParseException("l.{}: Function {} is not safe"
                                  .format(func_node.lineno, func_node.id))
         
         for arg_node in node.args:
@@ -324,18 +343,12 @@ def assert_valid_namespaces(expr):
                              .format(value.lineno))
 
 
-def is_namespaces_assignment(node):
-    if type(node) != ast.Assign:
-        return False
-    
-    return any(type(expr) == ast.Name and expr.id == "namespaces"
-               for expr in node.targets)
-
+REQUIRED = ("comparer", "groups")
 
 def parse_config(files, commands):
     inner_globals = dict(SAFE_FUNCTIONS)
     inner_globals["__builtins__"] = {} # Disable any builtin function
-    inner_globals["named_items"] = {} # Store named items provided
+    inner_globals["named_items"] = {} # Store the provided named items
     
     for file in files:
         text = file.read()
@@ -343,18 +356,17 @@ def parse_config(files, commands):
         execute_code(root, file.name, inner_globals)
     
     for text in commands:
-        root = ast.parse(text, "<execute>")
+        root = ast.parse(text, filename="<execute>")
         execute_code(root, '--execute', inner_globals)
     
     # Make sure we have the necessary variables in the inner_globals dictionary
-    if "comparer" not in inner_globals:
-        raise ParseException("Missing the 'comparer' variable.")
-    if "groups" not in inner_globals:
-        raise ParseException("Missing the 'groups' variable.")
+    for varname in REQUIRED:
+        if varname not in inner_globals:
+            raise ParseException("Missing the {!r} variable".format(varname))
     
     comparer = inner_globals["comparer"]
-    items = inner_globals["named_items"]
     groups = inner_globals["groups"]
+    items = inner_globals["named_items"]
     
     if "total" in inner_globals:
         total = inner_globals["total"]

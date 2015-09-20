@@ -1,5 +1,5 @@
 from mossy import sql, utils
-from mossy.parse_config import register
+from mossy.parse_config import plugin
 
 
 def table_column_from_ic(ic):
@@ -188,7 +188,7 @@ class SharedICCalculator:
         return ic_mica - factor * (ic_mica - ic_z)
 
 
-@register()
+@plugin()
 class resnik:
     
     def __init__(self, ic, hierarchy=None, use_disjoints=False):
@@ -203,7 +203,7 @@ class resnik:
         return self.shared_ic_calculator.get(one, two)
 
 
-@register()
+@plugin()
 class lin:
     
     def __init__(self, ic, hierarchy=None, use_disjoints=False):
@@ -236,7 +236,7 @@ class lin:
         return num / den
 
 
-@register()
+@plugin()
 class jiang:
     
     def __init__(self, ic, hierarchy=None, use_disjoints=False):

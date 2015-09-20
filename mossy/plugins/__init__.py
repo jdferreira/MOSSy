@@ -1,5 +1,6 @@
 # This file recursively imports all the plugins (.py files or folders containing
-# __init__.py files in them)
+# __init__.py files in them), plus all the plugins in any directory named
+# mossy.plugins
 
 import importlib
 import os
@@ -12,7 +13,7 @@ for filename in os.listdir(dirname):
     if os.path.isdir(fullpath):
         if '__init__.py' in os.listdir(fullpath):
             module_name = "mossy.plugins." + filename
-            importlib.import_module(filename)
+            importlib.import_module(module_name)
     else:
         if filename.endswith('.py') and not filename.startswith('_'):
             module_name = "mossy.plugins." + filename[:-3]
@@ -28,7 +29,7 @@ if os.path.isdir(dirname):
         if os.path.isdir(fullpath):
             if '__init__.py' in os.listdir(fullpath):
                 module_name = filename
-                importlib.import_module(filename)
+                importlib.import_module(module_name)
         else:
             if filename.endswith('.py') and not filename.startswith('_'):
                 module_name = filename[:-3]

@@ -1,7 +1,7 @@
 from mossy import utils
-from mossy.parse_config import register
+from mossy.parse_config import plugin
 
-@register()
+@plugin()
 class from_list_comparer:
     
     def __init__(self, inner):
@@ -13,7 +13,7 @@ class from_list_comparer:
                                   utils.model_to_seq(two))
 
 
-@register()
+@plugin()
 class simple_model_comparer:
     
     def __init__(self, inners, aggr):
@@ -39,21 +39,21 @@ class simple_model_comparer:
 
 
 
-@register()
+@plugin()
 class model_min:
     
     def aggregate(self, similarities, one, two):
         return min(similarities.values())
 
 
-@register()
+@plugin()
 class model_max:
     
     def aggregate(self, similarities, one, two):
         return max(similarities.values())
 
 
-@register()
+@plugin()
 class model_avg:
     
     def __init__(self, weights=None):

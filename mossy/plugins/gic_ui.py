@@ -1,10 +1,10 @@
 import sys
 
 from mossy import sql, utils
-from mossy.parse_config import register
+from mossy.parse_config import plugin
 
 
-@register()
+@plugin()
 class sim_ui:
     
     def __init__(self, hierarchy=None, relevance=None, threshold=None):
@@ -127,7 +127,7 @@ class sim_ui:
             return sql.cursor.fetchone()[0]
     
 
-@register()
+@plugin()
 class sim_gic:
     
     def __init__(self, ic, hierarchy=None, relevance=None, threshold=None):

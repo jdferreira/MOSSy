@@ -1,9 +1,9 @@
 
 from mossy import sql, utils
-from mossy.parse_config import register
+from mossy.parse_config import plugin
 
 
-@register()
+@plugin()
 class subsumption:
     
     def __init__(self, inner, hierarchy=None):
