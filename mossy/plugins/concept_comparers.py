@@ -190,6 +190,30 @@ class SharedICCalculator:
 
 @plugin()
 class resnik:
+    """
+    Constructor:
+        resnik(ic, hierarchy=None, use_disjoints=False)
+    where
+        `ic` is the information content value to use
+        `hierarchy` is the hierarchy where the common superclasses are found; if
+            `None` is given, then the regular class-subclass hierarchy is used.
+        `use_disjoints` is a boolean to indicate whether to take into account
+            disjointness information to compute similarity. See Ferreira JD,
+            Hastings J, Couto FM (2013). Exploiting disjointness axioms to
+            improve semantic similarity measures. Bioinformatics, 29(21),
+            2781-2787 for more information.
+    
+    If `hierarchy` is not None, `use_disjoints` must be False.
+    
+    Usage:
+        .compare(one, two)
+    where
+        `one` and `two` are concepts
+    
+    Resnik is a classic semantic similarity method. See Resnik P. (1995). Using
+    information content to evaluate semantic similarity in a taxonomy. arXiv
+    preprint cmp-lg/9511007.
+    """
     
     def __init__(self, ic, hierarchy=None, use_disjoints=False):
         self.shared_ic_calculator = SharedICCalculator(
@@ -205,6 +229,30 @@ class resnik:
 
 @plugin()
 class lin:
+    """
+    Constructor:
+        lin(ic, hierarchy=None, use_disjoints=False)
+    where
+        `ic` is the information content value to use
+        `hierarchy` is the hierarchy where the common superclasses are found; if
+            `None` is given, then the regular class-subclass hierarchy is used.
+        `use_disjoints` is a boolean to indicate whether to take into account
+            disjointness information to compute similarity. See Ferreira JD,
+            Hastings J, Couto FM (2013). Exploiting disjointness axioms to
+            improve semantic similarity measures. Bioinformatics, 29(21),
+            2781-2787 for more information.
+    
+    If `hierarchy` is not None, `use_disjoints` must be False.
+    
+    Usage:
+        .compare(one, two)
+    where
+        `one` and `two` are concepts
+    
+    Lin is a classic semantic similarity method. See Lin D. (1998). An
+    information-theoretic definition of similarity. In ICML (Vol. 98, pp.
+    296-304).
+    """
     
     def __init__(self, ic, hierarchy=None, use_disjoints=False):
         self.ic_calculator = ICCalculator(ic)
@@ -238,6 +286,31 @@ class lin:
 
 @plugin()
 class jiang:
+    """
+    Constructor:
+        lin(ic, hierarchy=None, use_disjoints=False)
+    where
+        `ic` is the information content value to use
+        `hierarchy` is the hierarchy where the common superclasses are found; if
+            `None` is given, then the regular class-subclass hierarchy is used.
+        `use_disjoints` is a boolean to indicate whether to take into account
+            disjointness information to compute similarity. See Ferreira JD,
+            Hastings J, Couto FM (2013). Exploiting disjointness axioms to
+            improve semantic similarity measures. Bioinformatics, 29(21),
+            2781-2787 for more information.
+    
+    If `hierarchy` is not None, `use_disjoints` must be False.
+    
+    Usage:
+        .compare(one, two)
+    where
+        `one` and `two` are concepts
+    
+    Jiang & Conrath is a classic semantic distance method. It computes a
+    distance rather than a similarity measure. See Jiang JJ, Conrath DW (1997).
+    Semantic similarity based on corpus statistics and lexical taxonomy. arXiv
+    preprint cmp-lg/9709008.
+    """
     
     def __init__(self, ic, hierarchy=None, use_disjoints=False):
         self.ic_calculator = ICCalculator(ic)

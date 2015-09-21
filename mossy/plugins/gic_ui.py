@@ -6,6 +6,27 @@ from mossy.parse_config import plugin
 
 @plugin()
 class sim_ui:
+    """
+    Constructor:
+        sim_ui(hierarchy=None, relevance=None, threshold=None)
+    where
+        `hierarchy` is the hierarchy where the common superclasses are found; if
+            `None` is given, then the regular class-subclass hierarchy is used.
+        `relevance` is the name of the measure of relevance to specify which
+            concepts are used to compute similarity.
+        `threshold` is a numberic value that is associated with `relevance` and
+            specifically chooses the concepts that are relevant
+    
+    Usage:
+        .compare(one, two)
+    where
+        `one` and `two` are concepts or lists of concepts (mixed input is
+            allowed)
+    
+    SIM_UI is a measure defined in Gentleman R (2005). Visualizing and distances
+    using GO. The result is the ratio between the number of common superclasses
+    and all superclasses of the concepts in `one` and the concepts in `two`
+    """
     
     def __init__(self, hierarchy=None, relevance=None, threshold=None):
         
@@ -129,6 +150,31 @@ class sim_ui:
 
 @plugin()
 class sim_gic:
+    """
+    Constructor:
+        sim_gic(ic, hierarchy=None, relevance=None, threshold=None)
+    where
+        `ic` is the information content value to use
+        `hierarchy` is the hierarchy where the common superclasses are found; if
+            `None` is given, then the regular class-subclass hierarchy is used.
+        `relevance` is the name of the measure of relevance to specify which
+            concepts are used to compute similarity.
+        `threshold` is a numberic value that is associated with `relevance` and
+            specifically chooses the concepts that are relevant
+    
+    Usage:
+        .compare(one, two)
+    where
+        `one` and `two` are concepts or lists of concepts (mixed input is
+            allowed)
+    
+    SIM_GIC is a measure defined in Pesquita C, Faria D, Bastos H, Falcão A,
+    Couto F (2007). Evaluating GO-based semantic similarity measures. In Proc.
+    10th Annual Bio-Ontologies Meeting (Vol. 37, No. 40, p. 38). The result is
+    the ratio between the number of common superclasses and all superclasses
+    of the concepts in `one` and the concepts in `two`, where each concept is
+    weighted according to its information content.
+    """
     
     def __init__(self, ic, hierarchy=None, relevance=None, threshold=None):
         sql.assert_identifier(ic)
