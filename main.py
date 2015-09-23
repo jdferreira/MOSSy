@@ -89,6 +89,11 @@ def main():
     # Help arguments
     parser.add_argument("-?", "--help", action="help",
                         help="Shows this help.")
+    parser.add_argument("-L", "--list-plugins", nargs='*',
+                        help="Shows the various plugin callables, both "
+                             "builtin and user-defined. If a list of names is "
+                             "given after the flag, the corresponding "
+                             "documentation is shown as well")
     
     # Input arguments
     parser.add_argument("config", nargs='*', default=[sys.stdin],
@@ -150,6 +155,23 @@ def main():
     # Parse the arguments
     args = parser.parse_args()
     
+    if args.list_plugins is not None:
+        if len(args.list_plugins) == 0:
+            for name in sorted(parse_config.SAFE_FUNCTIONS):
+                print(name)
+        else:
+            for name in args.list_plugins:
+                print("=" * 80)
+                func = parse_config.SAFE_FUNCTIONS.get(name, None)
+                if func is None:
+                    print("Unknown plugin: {!r}".format(name))
+                else:
+                    print("Plugin: {!r}".format(name))
+                    if func.__doc__ is not None:
+                        print(func.__doc__)
+                    print()
+        sys.exit(0)
+    
     # Setup logging the facility
     if args.log is None:
         logging.basicConfig(handlers=[logging.NullHandler()])
@@ -202,6 +224,7 @@ def main():
         
         sb.append("{:5f}".format(similarity))
         print('\t'.join(sb), file=args.output)
+        args.output.flush() # Allow users to check the results during execution
         
         if args.eta:
             eta.increment()
@@ -213,4 +236,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    

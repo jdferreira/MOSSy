@@ -1,9 +1,29 @@
 from mossy import sql, utils
-from mossy.parse_config import register
+from mossy.parse_config import plugin
 
 
-@register()
+@plugin()
 class subsumption:
+    """
+    Constructor:
+        subsumption(inner, hierarchy)
+    where
+        `ìnner` is a comparer that can compare one concept with another concept
+        `hierarchy` is the name of a hierarchy (a table in the underlying SQL
+            database) which defines the hierarchy to use when determining
+            whether a concept is a superclass of another concept
+    
+    Usage:
+        .compare(one, two)
+    where
+        `one` is a concept
+        `two` is a sequence of concepts.
+    
+    Returns returns 1 if any of the concepts in `two` is a superclass of `one`.
+    Otherwise, compare the concept `one` with all concepts in `two` using the
+    `inner` comparer, supplied at construction time, and return the maximum of
+    those values.
+    """
     
     def __init__(self, inner, hierarchy=None):
         
@@ -47,7 +67,7 @@ class subsumption:
         
         # Otherwise, compare the concept with any of the concepts of the second
         # list and return the maximum similarity value found
-        result = 0;
+        result = 0
         for second in two:
             result = max(result, self.inner.compare(one, second))
         return result;

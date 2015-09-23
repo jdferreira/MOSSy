@@ -5,12 +5,10 @@
 import threading
 
 try:
-    import MySQLdb
-    _driver = MySQLdb
+    import MySQLdb as _driver
 except ImportError:
     try:
-        import pymysql
-        _driver = pymysql
+        import pymysql as _driver
     except ImportError:
         raise ImportError("Unable to import either 'MySQLdb' or 'pymysql'")
 

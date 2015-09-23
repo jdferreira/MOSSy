@@ -4,7 +4,7 @@ import math
 from collections import defaultdict
 
 from mossy import sql, utils
-from mossy.parse_config import register
+from mossy.parse_config import plugin
 from mossy.plugins.concept_comparers import ICCalculator
 
 
@@ -42,7 +42,7 @@ def convert_input(item):
     return chains
 
 
-@register("log_scale")
+@plugin("log_scale")
 class LogScale:
     
     def __init__(self, scale_min=0, scale_max=1):
@@ -69,7 +69,7 @@ class LogScale:
         return result
 
 
-@register()
+@plugin()
 class ferreira:
     
     def __init__(self, *,
