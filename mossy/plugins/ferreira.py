@@ -159,7 +159,7 @@ class ferreira:
     
     
     def construct_neighborhood(self, chains):
-        result = defaultdict(int)
+        result = defaultdict(float)
         for chain in chains:
             neighbors = self.find_and_weigh_neighbors(chain)
             for concept_id, weight in neighbors.items():
@@ -168,7 +168,7 @@ class ferreira:
         return result
     
     
-    def find_and_weigh_neighbors(self, chain, ttt=None):
+    def find_and_weigh_neighbors(self, chain):
         """
         This method finds, for a given chain, a collection of more chains that
         are inferred from the given one. This is done by:
@@ -190,15 +190,15 @@ class ferreira:
         #   2. The distance travelled to reach it
         #   3. The weight of the corresponding chain
         
-        result = defaultdict(int)
+        result = defaultdict(float)
         
         chain_weight = (self.get_properties_weight(chain[:-1]) *
                         self.get_ic(chain[-1]))
         
         # Each item in the todo list is a tuple:
         #   (concept_id, length to get here, weight of the chain to get here)
-        # Once we reach a tuple that is beyond the thresholds for this comparer
-        # we discard it.
+        # where the length is the number of properties. Once we reach a tuple
+        # that is beyond the thresholds for this comparer we discard it.
         todo = [(chain[-1], len(chain) - 1, chain_weight)]
         
         while todo:

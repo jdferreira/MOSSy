@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from mossy import sql, utils
@@ -270,6 +271,7 @@ class sim_gic:
         two = ','.join(two)
         
         query = self.inter_query.format(one, two)
+        logging.debug("INTER query = %s", query)
         with sql.lock:
             sql.cursor.execute(query)
             return sql.cursor.fetchone()[0] or 0
@@ -279,6 +281,7 @@ class sim_gic:
         all_ids = ','.join(set(one).union(two))
         
         query = self.union_query.format(all_ids)
+        logging.debug("UNION query = %s", query)
         with sql.lock:
             sql.cursor.execute(query)
             return sql.cursor.fetchone()[0] or 0
