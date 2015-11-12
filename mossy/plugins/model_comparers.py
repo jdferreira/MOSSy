@@ -83,11 +83,13 @@ class simple_model_comparer:
 class aggregative_comparer:
     """
     Constructor:
-        aggregative_comparer(inner, aggr)
+        aggregative_comparer(inner, aggr, only=[])
     where
         `ìnner` is a comparer to compare cocnepts within each domain
         `aggr` is an object that contains the .aggregate method. Common values
             include the plugins `model_min`, `model_max` and `model_avg`.
+        `only` is a list of domain names. If provided, only those domains are
+            used to compare the models; otherwise, all common domains are used
     
     Usage:
         .compare(one, two)
@@ -104,16 +106,20 @@ class aggregative_comparer:
     See also: `model_min`, `model_max`, `model_avg`
     """
     
-    def __init__(self, inner, aggr):
+    def __init__(self, inner, aggr, only=None):
         self.inner = inner
         self.aggr = aggr
+        self.only = only
     
     
     def compare(self, one, two):
         similarities = {}
         
         # Get the list of domains to consider (the intersection of them)
-        domains = set(one).intersect(two)
+        domains = set(one).intersection(two)
+        if self.domains is not None:
+            domains.intersection_update(self.only)
+        
         if not domains:
             return 0
         
