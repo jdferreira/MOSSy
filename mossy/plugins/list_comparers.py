@@ -56,8 +56,8 @@ class list_min:
     Constructor:
         list_min()
     
-    This object is used by the simple_list_comparer to aggregate the similarity
-    matrix values and returns the minimum of all those values
+    This object is used by the `simple_list_comparer` to aggregate the
+    similarity matrix values and returns the minimum of all those values
     """
     
     def aggregate(self, matrix, one, two):
@@ -70,8 +70,8 @@ class list_max:
     Constructor:
         list_max()
     
-    This object is used by the simple_list_comparer to aggregate the similarity
-    matrix values and returns the maximum of all those values
+    This object is used by the `simple_list_comparer` to aggregate the
+    similarity matrix values and returns the maximum of all those values
     """
     
     def aggregate(self, matrix, one, two):
@@ -84,8 +84,8 @@ class list_avg:
     Constructor:
         list_avg()
     
-    This object is used by the simple_list_comparer to aggregate the similarity
-    matrix values and returns the average of all those values
+    This object is used by the `simple_list_comparer` to aggregate the
+    similarity matrix values and returns the average of all those values
     """
     
     def aggregate(self, matrix, one, two):
@@ -98,36 +98,57 @@ class list_avg:
 class list_bma:
     """
     Constructor:
-        list_min()
+        list_bma(best_match="max")
+    where:
+        `best_match` is either "max" or "min" and defines what constitutes a
+            best match. If "max", the maximum of each row and column are used;
+            if "min" the minimum of each row and column are used.
     
-    This object is used by the simple_list_comparer to aggregate the similarity
-    matrix values. It first finds the maximum value in each row and the maximum
-    value in each column, and then averages all these `n + m` values (where `n`
-    is the number of rows and `m` is the number of columns)
+    This object is used by the `simple_list_comparer` to aggregate the
+    similarity matrix values. It first finds the maximum value in each row and
+    the maximum value in each column, and then takes the average of these
+    `n + m` values (where `n` is the number of rows and `m` is the number of
+    columns). If `best_match` is "min", replace "maximum" with "minimum" in this
+    paragraph.
     """
+    
+    def __init__(self, best_match="max"):
+        if best_match == "max":
+            self.best_match = max
+        elif best_match == "min":
+            self.best_match = min
+        else:
+            raise ValueError(
+                "Valid values for `best_match` are 'max' and 'min'.")
+    
     
     def aggregate(self, matrix, one, two):
         max_rows = [max(row) for row in matrix]
+        
         max_cols = [0 for i in matrix[0]]
         for row in matrix:
             for col_no, value in enumerate(row):
-                max_cols[col_no] = max(max_cols[col_no], value)
+                max_cols[col_no] = self.best_match(max_cols[col_no], value)
         
-        return (sum(max_rows) + sum(max_cols)) / (len(max_rows) + len(max_cols))
+        num = sum(max_rows) + sum(max_cols)
+        den = len(max_rows) + len(max_cols)
+        return num / den
 
 
 @plugin()
 class list_hna:
     """
     Constructor:
-        list_min(n=10, mode='highest')
+        list_hna(n=10, mode='highest')
     where
-        `n` defines how many values to consider
+        `n` defines how many values to consider. If the value is greater 1 or
+            more, we use that amount of values; if the number is between 0 and
+            1, we use interpret it as a fraction of all values in the matrix
         `mode` defines whether to consider the 'highest' of the 'lowest' values
     
-    This object is used by the simple_list_comparer to aggregate the similarity
-    matrix values. It finds the maximum `n` values of the matrix and returns
-    their average (or the minimum `n`, in case `mode == 'lowest'`).
+    This object is used by the `simple_list_comparer` to aggregate the
+    similarity matrix values. It finds the maximum `n` values of the matrix and
+    returns their average (or the minimum `n`, in case `mode == 'lowest'`).
     """
     
     def __init__(self, n=10, mode="highest"):
@@ -140,9 +161,15 @@ class list_hna:
     
     def aggregate(self, matrix, one, two):
         flat = sorted(value for row in matrix for value in row)
-        n = min(self.n, len(flat))
-        if self.mode == "highest":
-            flat = flat[-n:]
+        
+        if self.n < 1:
+            n = self.n * len(flat)
         else:
-            flat = flat[:n]
-        return sum(flat) / self.n
+            n = min(self.n, len(flat))
+        
+        if self.mode == "highest":
+            highest = flat[-n:]
+        else:
+            highest = flat[:n]
+        
+        return sum(highest) / len(highest)

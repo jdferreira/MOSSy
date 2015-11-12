@@ -44,11 +44,11 @@ class sim_ui:
                 self.inter_query += (
                     "JOIN relevance ON relevance.id = superclass ")
             self.inter_query += (
-                "WHERE subclass IN ({}) AND "
+                "WHERE subclass IN ({0}) AND "
                 "      superclass IN ("
                 "          SELECT superclass "
                 "          FROM hierarchy "
-                "          WHERE subclass IN ({})"
+                "          WHERE subclass IN ({1})"
                 "      ) "
                 "")
             if relevance is not None:
@@ -114,6 +114,9 @@ class sim_ui:
                     .format(relevance, sql.conn.escape(threshold)))
     
     def compare(self, one, two):
+        if not one or not two:
+            return 0
+        
         # If only one concept is given as either argument, encapsulate it into
         # a list
         one = utils.to_seq(one)
@@ -135,6 +138,7 @@ class sim_ui:
         two = ','.join(two)
         
         query = self.inter_query.format(one, two)
+        logging.debug("INTER query = %s", query)
         with sql.lock:
             sql.cursor.execute(query)
             return sql.cursor.fetchone()[0]

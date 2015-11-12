@@ -1,5 +1,6 @@
-import sys
+import logging
 import math
+import sys
 
 from collections import defaultdict
 
@@ -134,7 +135,10 @@ class ferreira:
         one = convert_input(one)
         two = convert_input(two)
         
+        logging.debug("Constructing neighborhood for first item")
         n1 = self.construct_neighborhood(one)
+        
+        logging.debug("Constructing neighborhood for second item")
         n2 = self.construct_neighborhood(two)
         
         return self.inter(n1, n2) / self.union(n1, n2)
@@ -165,6 +169,10 @@ class ferreira:
             for concept_id, weight in neighbors.items():
                 result[concept_id] = max(result[concept_id], weight)
         
+        if logging.getLogger().getEffectiveLevel() >= logging.DEBUG:
+            d = [(utils.get_entity(k)[0], v) for k, v in result.items()]
+            d.sort()
+            logging.debug("  result = dict(%r)", d)
         return result
     
     
