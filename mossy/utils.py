@@ -73,8 +73,7 @@ def model_to_seq(model):
 
 
 def to_seq(obj):
-    t = type(obj)
-    if t in (tuple, list, set):
+    if isinstance(obj, (tuple, list, set)):
         return obj
     else:
         return [obj]

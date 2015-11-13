@@ -117,7 +117,7 @@ class aggregative_comparer:
         
         # Get the list of domains to consider (the intersection of them)
         domains = set(one).intersection(two)
-        if self.domains is not None:
+        if self.only is not None:
             domains.intersection_update(self.only)
         
         if not domains:
@@ -165,7 +165,7 @@ class model_max:
 class model_avg:
     """
     Constructor:
-        model_min(weights=None)
+        model_avg(weights=None)
     where
         `weights` is a dictionary of the weight of each domain
     
@@ -198,11 +198,10 @@ class model_avg:
                 den += weight
             return num / den
         
-        for key, weight in self.weights.items():
-            if key not in similarities:
-                continue
-            
-            num += weight * similarities[key]
-            den += weight
-        
-        return num / den
+        else:
+            for key, weight in self.weights.items():
+                if key not in similarities:
+                    continue
+                num += weight * similarities[key]
+                den += weight
+            return num / den

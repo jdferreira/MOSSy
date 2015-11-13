@@ -1,10 +1,10 @@
 from mossy.parse_config import plugin
 
 @plugin()
-class simple_list_comparer:
+class lift_concept_comparer:
     """
     Constructor:
-        simple_list_comparer(inner, aggr)
+        lift_concept_comparer(inner, aggr)
     where
         `inner` is a concept comparer (a comparer that can compare one concept
             to another)
@@ -56,7 +56,7 @@ class list_min:
     Constructor:
         list_min()
     
-    This object is used by the `simple_list_comparer` to aggregate the
+    This object is used by the `lift_concept_comparer` to aggregate the
     similarity matrix values and returns the minimum of all those values
     """
     
@@ -70,7 +70,7 @@ class list_max:
     Constructor:
         list_max()
     
-    This object is used by the `simple_list_comparer` to aggregate the
+    This object is used by the `lift_concept_comparer` to aggregate the
     similarity matrix values and returns the maximum of all those values
     """
     
@@ -84,7 +84,7 @@ class list_avg:
     Constructor:
         list_avg()
     
-    This object is used by the `simple_list_comparer` to aggregate the
+    This object is used by the `lift_concept_comparer` to aggregate the
     similarity matrix values and returns the average of all those values
     """
     
@@ -104,7 +104,7 @@ class list_bma:
             best match. If "max", the maximum of each row and column are used;
             if "min" the minimum of each row and column are used.
     
-    This object is used by the `simple_list_comparer` to aggregate the
+    This object is used by the `lift_concept_comparer` to aggregate the
     similarity matrix values. It first finds the maximum value in each row and
     the maximum value in each column, and then takes the average of these
     `n + m` values (where `n` is the number of rows and `m` is the number of
@@ -146,7 +146,7 @@ class list_hna:
             1, we use interpret it as a fraction of all values in the matrix
         `mode` defines whether to consider the 'highest' of the 'lowest' values
     
-    This object is used by the `simple_list_comparer` to aggregate the
+    This object is used by the `lift_concept_comparer` to aggregate the
     similarity matrix values. It finds the maximum `n` values of the matrix and
     returns their average (or the minimum `n`, in case `mode == 'lowest'`).
     """

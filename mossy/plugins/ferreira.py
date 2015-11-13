@@ -116,18 +116,18 @@ class ferreira:
         self.discover_subclasses = discover_subclasses
         if discover_subclasses:
             self.get_hierarchy_query = (
-                "SELECT superclass "
+                "SELECT superclass, distance "
                 "FROM hierarchy "
                 "WHERE subclass = %s AND distance = 1 "
                 "UNION "
-                "SELECT subclass "
+                "SELECT subclass, distance "
                 "FROM hierarchy "
-                "WHERE superclass = %s AND distance = 1")
+                "WHERE superclass = %s AND distance <= %s")
         else:
             self.get_hierarchy_query = (
-                "SELECT superclass "
+                "SELECT superclass, distance "
                 "FROM hierarchy "
-                "WHERE subclass = %s AND distance = 1")
+                "WHERE subclass = %s AND distance <= %s")
     
     
     def compare(self, one, two):
@@ -232,14 +232,14 @@ class ferreira:
                     continue
                 
                 if self.discover_subclasses:
-                    args = (concept_id, concept_id)
+                    args = (concept_id, concept_id, max_distance)
                 else:
-                    args = (concept_id,)
+                    args = (concept_id, max_distance)
                 sql.cursor.execute(self.get_hierarchy_query, args)
                 
-                for relative, in sql.cursor:
-                    current_distance = prev_distance + 1
-                    current_weight = prev_weight * self.property_weights[None]
+                for relative, distance in sql.cursor:
+                    current_distance = prev_distance + distance
+                    current_weight = prev_weight * self.property_weights[None] ** distance
                     if (current_distance <= self.distance_threshold
                             and current_weight >= self.weight_threshold):
                         todo.append((relative,
